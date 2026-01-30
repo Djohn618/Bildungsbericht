@@ -202,8 +202,9 @@
                         </div>
 
                         <div class="mb-3">
-                            <label for="edit-passwort" class="form-label">Passwort <span class="text-danger">*</span></label>
-                            <InputText id="edit-passwort" type="password" class="form-control" @bind-Value="EditBenutzer.Passwort" disabled="@IsEditing" placeholder="Neues Passwort eingeben" />
+                            <label for="edit-passwort" class="form-label">Passwort</label>
+                            <InputText id="edit-passwort" type="password" class="form-control" @bind-Value="EditBenutzer.Passwort" disabled="@IsEditing" placeholder="Leer lassen, um Passwort nicht zu ändern" />
+                            <small class="text-muted">Hinweis: Leer lassen, um das aktuelle Passwort beizubehalten. Neues Passwort eingeben, um es zu ändern.</small>
                             <ValidationMessage For="@(() => EditBenutzer.Passwort)" />
                         </div>
 

@@ -42,7 +42,13 @@ namespace BildungsBericht.DB
         {
             try
             {
-                String query = String.Format("SELECT Id, Vorname, Nachname, Geburtsdatum, Email, Passwort, Rolle_Id, Lehrberuf_Id FROM tbl_benutzer WHERE Id = {0}", id);
+                // ID Validierung - verhindert SQL Injection da ID ein Integer ist
+                if (id <= 0)
+                {
+                    throw new ArgumentException("Ungültige Benutzer-ID");
+                }
+
+                String query = String.Format("SELECT Id, Vorname, Nachname, Geburtsdatum, Email, Rolle_Id, Lehrberuf_Id FROM tbl_benutzer WHERE Id = {0}", id);
 
                 DataTable dt = base.GetDataTable(query);
 
@@ -56,7 +62,7 @@ namespace BildungsBericht.DB
                         Nachname = row["Nachname"].ToString(),
                         Geburtsdatum = row["Geburtsdatum"] != DBNull.Value ? Convert.ToDateTime(row["Geburtsdatum"]) : null,
                         Email = row["Email"] != DBNull.Value ? row["Email"].ToString() : null,
-                        Passwort = row["Passwort"].ToString(),
+                        Passwort = "********", // Passwort wird nicht zurückgegeben aus Sicherheitsgründen
                         RolleId = Convert.ToInt32(row["Rolle_Id"]),
                         LehrberufId = row["Lehrberuf_Id"] != DBNull.Value ? (int?)Convert.ToInt32(row["Lehrberuf_Id"]) : null
                     };
@@ -115,29 +121,58 @@ namespace BildungsBericht.DB
         {
             try
             {
-                // SQL Query um Benutzer zu aktualisieren
-                String query = @"UPDATE tbl_benutzer 
-                                SET vorname = @vorname, 
-                                    nachname = @nachname, 
-                                    geburtsdatum = @geburtsdatum, 
-                                    email = @email, 
-                                    passwort = @passwort, 
-                                    rolle_id = @rolle_id, 
-                                    lehrberuf_id = @lehrberuf_id 
-                                WHERE id = @id";
-
-                // Parameter vorbereiten
-                var parameters = new System.Data.SqlClient.SqlParameter[]
+                // Wenn Passwort der Platzhalter ist, nicht aktualisieren
+                String query;
+                System.Data.SqlClient.SqlParameter[] parameters;
+                
+                if (benutzer.Passwort == "********")
                 {
-                    new System.Data.SqlClient.SqlParameter("@id", benutzer.Id),
-                    new System.Data.SqlClient.SqlParameter("@vorname", benutzer.Vorname),
-                    new System.Data.SqlClient.SqlParameter("@nachname", benutzer.Nachname),
-                    new System.Data.SqlClient.SqlParameter("@geburtsdatum", (object)benutzer.Geburtsdatum ?? DBNull.Value),
-                    new System.Data.SqlClient.SqlParameter("@email", (object)benutzer.Email ?? DBNull.Value),
-                    new System.Data.SqlClient.SqlParameter("@passwort", benutzer.Passwort),
-                    new System.Data.SqlClient.SqlParameter("@rolle_id", benutzer.RolleId),
-                    new System.Data.SqlClient.SqlParameter("@lehrberuf_id", (object)benutzer.LehrberufId ?? DBNull.Value)
-                };
+                    // Query ohne Passwort-Update
+                    query = @"UPDATE tbl_benutzer 
+                            SET vorname = @vorname, 
+                                nachname = @nachname, 
+                                geburtsdatum = @geburtsdatum, 
+                                email = @email, 
+                                rolle_id = @rolle_id, 
+                                lehrberuf_id = @lehrberuf_id 
+                            WHERE id = @id";
+
+                    parameters = new System.Data.SqlClient.SqlParameter[]
+                    {
+                        new System.Data.SqlClient.SqlParameter("@id", benutzer.Id),
+                        new System.Data.SqlClient.SqlParameter("@vorname", benutzer.Vorname),
+                        new System.Data.SqlClient.SqlParameter("@nachname", benutzer.Nachname),
+                        new System.Data.SqlClient.SqlParameter("@geburtsdatum", (object)benutzer.Geburtsdatum ?? DBNull.Value),
+                        new System.Data.SqlClient.SqlParameter("@email", (object)benutzer.Email ?? DBNull.Value),
+                        new System.Data.SqlClient.SqlParameter("@rolle_id", benutzer.RolleId),
+                        new System.Data.SqlClient.SqlParameter("@lehrberuf_id", (object)benutzer.LehrberufId ?? DBNull.Value)
+                    };
+                }
+                else
+                {
+                    // Query mit Passwort-Update
+                    query = @"UPDATE tbl_benutzer 
+                            SET vorname = @vorname, 
+                                nachname = @nachname, 
+                                geburtsdatum = @geburtsdatum, 
+                                email = @email, 
+                                passwort = @passwort, 
+                                rolle_id = @rolle_id, 
+                                lehrberuf_id = @lehrberuf_id 
+                            WHERE id = @id";
+
+                    parameters = new System.Data.SqlClient.SqlParameter[]
+                    {
+                        new System.Data.SqlClient.SqlParameter("@id", benutzer.Id),
+                        new System.Data.SqlClient.SqlParameter("@vorname", benutzer.Vorname),
+                        new System.Data.SqlClient.SqlParameter("@nachname", benutzer.Nachname),
+                        new System.Data.SqlClient.SqlParameter("@geburtsdatum", (object)benutzer.Geburtsdatum ?? DBNull.Value),
+                        new System.Data.SqlClient.SqlParameter("@email", (object)benutzer.Email ?? DBNull.Value),
+                        new System.Data.SqlClient.SqlParameter("@passwort", benutzer.Passwort),
+                        new System.Data.SqlClient.SqlParameter("@rolle_id", benutzer.RolleId),
+                        new System.Data.SqlClient.SqlParameter("@lehrberuf_id", (object)benutzer.LehrberufId ?? DBNull.Value)
+                    };
+                }
 
                 // Query ausführen
                 int rowsAffected = base.ExecuteSql(query, parameters);

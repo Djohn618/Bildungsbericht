@@ -22,7 +22,6 @@ namespace BildungsBericht.Components.Pages
         public bool ShowEditModal { get; set; } = false;
         public bool IsEditing { get; set; } = false;
         public Models.Benutzer EditBenutzer { get; set; } = new Models.Benutzer();
-        private string? OriginalPassword { get; set; } // Speichert das Original-Passwort
 
         // Delete-Funktionalität
         public bool ShowDeleteModal { get; set; } = false;
@@ -117,7 +116,6 @@ namespace BildungsBericht.Components.Pages
                 if (vollstaendigerBenutzer != null)
                 {
                     EditBenutzer = vollstaendigerBenutzer;
-                    OriginalPassword = vollstaendigerBenutzer.Passwort; // Original-Passwort speichern
                     ShowEditModal = true;
                     StatusMessage = null;
                 }
@@ -199,6 +197,14 @@ namespace BildungsBericht.Components.Pages
         {
             try
             {
+                // Null-Check für Sicherheit
+                if (DeleteBenutzer == null)
+                {
+                    StatusMessage = "Fehler: Kein Benutzer ausgewählt.";
+                    IsError = true;
+                    return;
+                }
+
                 IsDeleting = true;
                 StatusMessage = null;
                 StateHasChanged();
