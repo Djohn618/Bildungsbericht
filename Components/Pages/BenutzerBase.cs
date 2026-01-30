@@ -18,6 +18,16 @@ namespace BildungsBericht.Components.Pages
 
         public Models.Benutzer NewBenutzer { get; set; } = new Models.Benutzer();
 
+        // Edit-Funktionalität
+        public bool ShowEditModal { get; set; } = false;
+        public bool IsEditing { get; set; } = false;
+        public Models.Benutzer EditBenutzer { get; set; } = new Models.Benutzer();
+
+        // Delete-Funktionalität
+        public bool ShowDeleteModal { get; set; } = false;
+        public bool IsDeleting { get; set; } = false;
+        public CLBenutzer DeleteBenutzer { get; set; }
+
         protected override async Task OnInitializedAsync()
         {
             await LoadBenutzers();
@@ -93,6 +103,118 @@ namespace BildungsBericht.Components.Pages
         {
             ShowCreateModal = false;
             StateHasChanged();
+        }
+
+        // Edit-Modal öffnen
+        protected void OpenEditModal(CLBenutzer benutzer)
+        {
+            EditBenutzer = new Models.Benutzer
+            {
+                Id = benutzer.BenutzerId,
+                Vorname = benutzer.FirstName,
+                Nachname = benutzer.LastName,
+                RolleId = 1, // Standard Rolle
+                Geburtsdatum = DateTime.Today.AddYears(-18),
+                Passwort = "******" // Platzhalter für Passwort
+            };
+            ShowEditModal = true;
+            StatusMessage = null;
+            StateHasChanged();
+        }
+
+        // Edit-Modal schließen
+        protected void CloseEditModal()
+        {
+            ShowEditModal = false;
+            StateHasChanged();
+        }
+
+        // Benutzer aktualisieren
+        protected async Task UpdateBenutzer()
+        {
+            try
+            {
+                IsEditing = true;
+                StatusMessage = null;
+                StateHasChanged();
+
+                bool success = await BenutzerService.UpdateBenutzer(EditBenutzer);
+
+                if (success)
+                {
+                    StatusMessage = "Benutzer erfolgreich aktualisiert!";
+                    IsError = false;
+                    ShowEditModal = false;
+                    await LoadBenutzers();
+                }
+                else
+                {
+                    StatusMessage = "Fehler beim Aktualisieren des Benutzers.";
+                    IsError = true;
+                }
+            }
+            catch (Exception ex)
+            {
+                StatusMessage = $"Fehler: {ex.Message}";
+                IsError = true;
+            }
+            finally
+            {
+                IsEditing = false;
+                StateHasChanged();
+            }
+        }
+
+        // Delete-Modal öffnen
+        protected void OpenDeleteModal(CLBenutzer benutzer)
+        {
+            DeleteBenutzer = benutzer;
+            ShowDeleteModal = true;
+            StatusMessage = null;
+            StateHasChanged();
+        }
+
+        // Delete-Modal schließen
+        protected void CloseDeleteModal()
+        {
+            ShowDeleteModal = false;
+            StateHasChanged();
+        }
+
+        // Benutzer löschen
+        protected async Task ConfirmDeleteBenutzer()
+        {
+            try
+            {
+                IsDeleting = true;
+                StatusMessage = null;
+                StateHasChanged();
+
+                bool success = await BenutzerService.DeleteBenutzer(DeleteBenutzer.BenutzerId);
+
+                if (success)
+                {
+                    StatusMessage = "Benutzer erfolgreich gelöscht!";
+                    IsError = false;
+                    ShowDeleteModal = false;
+                    await LoadBenutzers();
+                }
+                else
+                {
+                    StatusMessage = "Fehler beim Löschen des Benutzers.";
+                    IsError = true;
+                }
+            }
+            catch (Exception ex)
+            {
+                StatusMessage = $"Fehler: {ex.Message}";
+                IsError = true;
+            }
+            finally
+            {
+                IsDeleting = false;
+                StateHasChanged();
+            }
         }
     }
 }
