@@ -1,0 +1,218 @@
+[
+  {
+    "ContainingType": "BildungsBericht.Controllers.BenutzersController",
+    "Method": "GetBenutzers",
+    "RelativePath": "api/Benutzers",
+    "HttpMethod": "GET",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "BildungsBericht.Controllers.BenutzersController",
+    "Method": "GetBenutzersExt",
+    "RelativePath": "api/Benutzers",
+    "HttpMethod": "",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [],
+    "ReturnTypes": [
+      {
+        "Type": "System.Collections.Generic.IEnumerable\u00601[[BildungsBericht.Models.CLBenutzer, BildungsBericht, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null]]",
+        "MediaTypes": [
+          "text/plain",
+          "application/json",
+          "text/json"
+        ],
+        "StatusCode": 200
+      }
+    ]
+  },
+  {
+    "ContainingType": "BildungsBericht.Controllers.BenutzersController",
+    "Method": "CreateBenutzer",
+    "RelativePath": "api/Benutzers",
+    "HttpMethod": "POST",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "benutzer",
+        "Type": "BildungsBericht.Models.Benutzer",
+        "IsRequired": true
+      }
+    ],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "BildungsBericht.Controllers.BenutzersController",
+    "Method": "CreateBenutzerExt",
+    "RelativePath": "api/Benutzers",
+    "HttpMethod": "",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "benutzer",
+        "Type": "BildungsBericht.Models.Benutzer",
+        "IsRequired": true
+      }
+    ],
+    "ReturnTypes": [
+      {
+        "Type": "System.Int32",
+        "MediaTypes": [
+          "text/plain",
+          "application/json",
+          "text/json"
+        ],
+        "StatusCode": 200
+      }
+    ]
+  },
+  {
+    "ContainingType": "BildungsBericht.Controllers.BerichteController",
+    "Method": "GetBerichte",
+    "RelativePath": "api/Berichte",
+    "HttpMethod": "GET",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "BildungsBericht.Controllers.BerichteController",
+    "Method": "GetBerichteExt",
+    "RelativePath": "api/Berichte",
+    "HttpMethod": "",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [],
+    "ReturnTypes": [
+      {
+        "Type": "System.Collections.Generic.IEnumerable\u00601[[BildungsBericht.Models.TemplateBericht, BildungsBericht, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null]]",
+        "MediaTypes": [
+          "text/plain",
+          "application/json",
+          "text/json"
+        ],
+        "StatusCode": 200
+      }
+    ]
+  },
+  {
+    "ContainingType": "BildungsBericht.Controllers.BerichteController",
+    "Method": "CreateBericht",
+    "RelativePath": "api/Berichte",
+    "HttpMethod": "POST",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "bericht",
+        "Type": "BildungsBericht.Models.TemplateBericht",
+        "IsRequired": true
+      }
+    ],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "BildungsBericht.Controllers.BerichteController",
+    "Method": "CreateBerichtExt",
+    "RelativePath": "api/Berichte",
+    "HttpMethod": "",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "bericht",
+        "Type": "BildungsBericht.Models.TemplateBericht",
+        "IsRequired": true
+      }
+    ],
+    "ReturnTypes": [
+      {
+        "Type": "System.Int32",
+        "MediaTypes": [
+          "text/plain",
+          "application/json",
+          "text/json"
+        ],
+        "StatusCode": 200
+      }
+    ]
+  },
+  {
+    "ContainingType": "BildungsBericht.Controllers.SelbstbewertungController",
+    "Method": "GetSelbstbewertungen",
+    "RelativePath": "api/Selbstbewertung",
+    "HttpMethod": "GET",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "BildungsBericht.Controllers.SelbstbewertungController",
+    "Method": "GetSelbstbewertungenExt",
+    "RelativePath": "api/Selbstbewertung",
+    "HttpMethod": "",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [],
+    "ReturnTypes": [
+      {
+        "Type": "System.Collections.Generic.IEnumerable\u00601[[BildungsBericht.Models.Selbstbewertung, BildungsBericht, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null]]",
+        "MediaTypes": [
+          "text/plain",
+          "application/json",
+          "text/json"
+        ],
+        "StatusCode": 200
+      }
+    ]
+  },
+  {
+    "ContainingType": "BildungsBericht.Controllers.SelbstbewertungController",
+    "Method": "CreateSelbstbewertung",
+    "RelativePath": "api/Selbstbewertung",
+    "HttpMethod": "POST",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "selbstbewertung",
+        "Type": "BildungsBericht.Models.Selbstbewertung",
+        "IsRequired": true
+      }
+    ],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "BildungsBericht.Controllers.SelbstbewertungController",
+    "Method": "CreateSelbstbewertungExt",
+    "RelativePath": "api/Selbstbewertung",
+    "HttpMethod": "",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "selbstbewertung",
+        "Type": "BildungsBericht.Models.Selbstbewertung",
+        "IsRequired": true
+      }
+    ],
+    "ReturnTypes": [
+      {
+        "Type": "System.Int32",
+        "MediaTypes": [
+          "text/plain",
+          "application/json",
+          "text/json"
+        ],
+        "StatusCode": 200
+      }
+    ]
+  }
+]

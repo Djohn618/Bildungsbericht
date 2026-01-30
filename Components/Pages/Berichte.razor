@@ -1,0 +1,195 @@
+@page "/berichte"
+@using BildungsBericht.Models
+@inherits BerichteBase
+
+<PageTitle>Berichte - Bildungsbericht</PageTitle>
+
+<div class="container mt-4">
+    <div class="page-header">
+        <h1>📋 Bildungsberichte</h1>
+        <p class="lead">Übersicht aller Ausbildungsberichte</p>
+    </div>
+
+    @if (!string.IsNullOrEmpty(StatusMessage))
+    {
+        <div class="alert @(IsError ? "alert-danger" : "alert-success") alert-dismissible fade show" role="alert">
+            @StatusMessage
+            <button type="button" class="btn-close" @onclick="() => StatusMessage = null"></button>
+        </div>
+    }
+
+    <div class="card">
+        <div class="card-header bg-primary text-white">
+            <h3 class="mb-0">Berichtsverwaltung</h3>
+        </div>
+        <div class="card-body">
+            @if (Berichte == null)
+            {
+                <div class="text-center p-5">
+                    <div class="spinner-border text-primary" role="status">
+                        <span class="visually-hidden">Lädt...</span>
+                    </div>
+                    <p class="mt-3">Berichte werden geladen...</p>
+                </div>
+            }
+            else if (!Berichte.Any())
+            {
+                <div class="alert alert-warning">
+                    <strong>Keine Berichte gefunden.</strong> Es sind derzeit keine Berichte im System vorhanden.
+                </div>
+            }
+            else
+            {
+                <div class="table-responsive">
+                    <table class="table table-hover table-striped">
+                        <thead class="table-primary">
+                            <tr>
+                                <th>ID</th>
+                                <th>Semester</th>
+                                <th>Berichtdatum</th>
+                                <th>Lernender ID</th>
+                                <th>Berufsbildner ID</th>
+                                <th>Aktionen</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @foreach (var bericht in Berichte)
+                            {
+                                <tr>
+                                    <td>@bericht.Id</td>
+                                    <td>@bericht.Semester</td>
+                                    <td>@bericht.Berichtdatum.ToShortDateString()</td>
+                                    <td>@bericht.LernenderId</td>
+                                    <td>@(bericht.BerufsbildnerId?.ToString() ?? "N/A")</td>
+                                    <td>
+                                        <button class="btn btn-sm btn-primary" disabled>Details</button>
+                                        <button class="btn btn-sm btn-success" disabled>Bearbeiten</button>
+                                    </td>
+                                </tr>
+                            }
+                        </tbody>
+                    </table>
+                </div>
+
+                <div class="mt-3">
+                    <p class="text-muted">Anzahl Berichte: @Berichte.Count()</p>
+                </div>
+            }
+
+            <button class="btn btn-primary mt-3" @onclick="OpenCreateModal">
+                <i class="bi bi-plus-circle"></i> Neuen Bericht erstellen
+            </button>
+        </div>
+    </div>
+</div>
+
+@* Modal for creating new report *@
+@if (ShowCreateModal)
+{
+    <div class="modal fade show d-block" tabindex="-1" style="background-color: rgba(0,0,0,0.5);">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header bg-primary text-white">
+                    <h5 class="modal-title">Neuen Bericht erstellen</h5>
+                    <button type="button" class="btn-close btn-close-white" @onclick="CloseCreateModal" disabled="@IsCreating"></button>
+                </div>
+                <div class="modal-body">
+                    <EditForm Model="NewBericht" OnValidSubmit="CreateBericht">
+                        <DataAnnotationsValidator />
+                        <ValidationSummary class="text-danger" />
+
+                        <div class="mb-3">
+                            <label for="semester" class="form-label">Semester <span class="text-danger">*</span></label>
+                            <InputNumber id="semester" class="form-control" @bind-Value="NewBericht.Semester" disabled="@IsCreating" />
+                            <ValidationMessage For="@(() => NewBericht.Semester)" />
+                        </div>
+
+                        <div class="mb-3">
+                            <label for="berichtdatum" class="form-label">Berichtdatum <span class="text-danger">*</span></label>
+                            <InputDate id="berichtdatum" class="form-control" @bind-Value="NewBericht.Berichtdatum" disabled="@IsCreating" />
+                            <ValidationMessage For="@(() => NewBericht.Berichtdatum)" />
+                        </div>
+
+                        <div class="mb-3">
+                            <label for="lernenderId" class="form-label">Lernender ID <span class="text-danger">*</span></label>
+                            <InputNumber id="lernenderId" class="form-control" @bind-Value="NewBericht.LernenderId" disabled="@IsCreating" />
+                            <ValidationMessage For="@(() => NewBericht.LernenderId)" />
+                        </div>
+
+                        <div class="mb-3">
+                            <label for="berufsbildnerId" class="form-label">Berufsbildner ID</label>
+                            <InputNumber id="berufsbildnerId" class="form-control" @bind-Value="NewBericht.BerufsbildnerId" disabled="@IsCreating" />
+                        </div>
+
+                        <div class="mb-3">
+                            <label for="lehrberufId" class="form-label">Lehrberuf ID <span class="text-danger">*</span></label>
+                            <InputSelect id="lehrberufId" class="form-select" @bind-Value="NewBericht.LehrberufId" disabled="@IsCreating">
+                                <option value="1">Automatiker</option>
+                                <option value="2">Informatiker</option>
+                                <option value="3">Logistiker</option>
+                                <option value="4">Kein Lehrberuf</option>
+                            </InputSelect>
+                        </div>
+
+                        <div class="modal-footer">
+                            <button type="button" class="btn btn-secondary" @onclick="CloseCreateModal" disabled="@IsCreating">
+                                Abbrechen
+                            </button>
+                            <button type="submit" class="btn btn-primary" disabled="@IsCreating">
+                                @if (IsCreating)
+                                {
+                                    <span class="spinner-border spinner-border-sm me-2" role="status"></span>
+                                    <span>Erstellen...</span>
+                                }
+                                else
+                                {
+                                    <span>Erstellen</span>
+                                }
+                            </button>
+                        </div>
+                    </EditForm>
+                </div>
+            </div>
+        </div>
+    </div>
+}
+
+<style>
+    .page-header {
+        margin-bottom: 30px;
+        padding-bottom: 20px;
+        border-bottom: 3px solid #0066cc;
+    }
+
+    .card {
+        border: 2px solid #0066cc;
+        border-radius: 10px;
+        box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    }
+
+    .card-header.bg-primary {
+        background-color: #0066cc !important;
+        border-radius: 8px 8px 0 0;
+    }
+
+    .lead {
+        color: #666;
+    }
+
+    .table-primary {
+        background-color: #e6f2ff !important;
+    }
+
+    .table-hover tbody tr:hover {
+        background-color: #f0f8ff;
+    }
+
+    .btn-sm {
+        margin-right: 5px;
+    }
+
+    .modal.show {
+        display: block;
+    }
+</style>
+

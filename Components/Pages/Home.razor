@@ -1,0 +1,192 @@
+﻿@page "/"
+
+<PageTitle>Bildungsbericht - Startseite</PageTitle>
+
+<div class="home-container">
+    <div class="hero-section">
+        <h1 class="hero-title">Bildungsbericht</h1>
+        <p class="hero-subtitle">Digitale Erfassung und Verwaltung von Ausbildungsberichten</p>
+    </div>
+
+    <div class="feature-cards">
+        <div class="card feature-card">
+            <div class="card-icon">📋</div>
+            <h3>Berichte verwalten</h3>
+            <p>Erstellen, bearbeiten und verwalten Sie Ausbildungsberichte digital</p>
+            <a href="/berichte" class="btn-primary">Zu den Berichten</a>
+        </div>
+
+        <div class="card feature-card">
+            <div class="card-icon">✍️</div>
+            <h3>Selbstbewertung</h3>
+            <p>Lernende können ihre Fortschritte reflektieren und bewerten</p>
+            <a href="/selbstbewertung" class="btn-primary">Zur Selbstbewertung</a>
+        </div>
+
+        <div class="card feature-card">
+            <div class="card-icon">📊</div>
+            <h3>Kompetenzen</h3>
+            <p>Bewerten Sie Kompetenzen und verfolgen Sie den Lernfortschritt</p>
+            <a href="/kompetenzen" class="btn-primary">Zu den Kompetenzen</a>
+        </div>
+
+        <div class="card feature-card">
+            <div class="card-icon">👥</div>
+            <h3>Benutzerverwaltung</h3>
+            <p>Verwalten Sie Lernende, Berufsbildner und Administratoren</p>
+            <a href="/benutzer" class="btn-primary">Zur Verwaltung</a>
+        </div>
+    </div>
+
+    <div class="info-section">
+        <h2>Willkommen im digitalen Bildungsberichtsystem</h2>
+        <p>
+            Diese Anwendung ersetzt die bisherigen Excel-Templates und ermöglicht eine effiziente,
+            strukturierte Erfassung und Verwaltung von Ausbildungsberichten.
+        </p>
+        <h3>Implementierte Funktionen:</h3>
+        <ul class="feature-list">
+            <li>✓ Benutzerverwaltung <span class="status-badge status-active">Aktiv</span></li>
+            <li>✓ Berichte erstellen und verwalten <span class="status-badge status-active">Aktiv</span></li>
+            <li>✓ Selbstbewertungen für Lernende <span class="status-badge status-active">Aktiv</span></li>
+            <li>✓ Light/Dark Mode Toggle <span class="status-badge status-active">Aktiv</span></li>
+            <li>✓ Rollenbasierter Zugriff (in Vorbereitung)</li>
+            <li>✓ Kompetenzbewertung <span class="status-badge status-pending">In Entwicklung</span></li>
+            <li>✓ Semesterweise Berichterfassung</li>
+            <li>✓ Übersichtliche Darstellung aller Berichte</li>
+        </ul>
+    </div>
+</div>
+
+<style>
+    .home-container {
+        max-width: 1200px;
+        margin: 0 auto;
+        padding: 20px;
+    }
+
+    .hero-section {
+        text-align: center;
+        padding: 60px 20px;
+        background: linear-gradient(135deg, var(--primary-color, #0066cc) 0%, var(--secondary-color, #004d99) 100%);
+        color: white;
+        border-radius: 10px;
+        margin-bottom: 40px;
+        box-shadow: 0 4px 6px var(--card-shadow, rgba(0, 0, 0, 0.1));
+    }
+
+    .hero-title {
+        font-size: 3rem;
+        margin-bottom: 10px;
+        font-weight: bold;
+    }
+
+    .hero-subtitle {
+        font-size: 1.3rem;
+        opacity: 0.95;
+    }
+
+    .feature-cards {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+        gap: 25px;
+        margin-bottom: 40px;
+    }
+
+    .feature-card {
+        background: var(--background-color, white);
+        border: 2px solid var(--primary-color, #0066cc);
+        border-radius: 10px;
+        padding: 30px;
+        text-align: center;
+        transition: all 0.3s ease;
+        box-shadow: 0 2px 4px var(--card-shadow, rgba(0, 0, 0, 0.1));
+    }
+
+    .feature-card:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 8px 16px rgba(0, 102, 204, 0.2);
+        border-color: var(--success-color, #28a745);
+    }
+
+    .card-icon {
+        font-size: 3rem;
+        margin-bottom: 15px;
+    }
+
+    .feature-card h3 {
+        color: var(--primary-color, #0066cc);
+        margin-bottom: 15px;
+        font-size: 1.5rem;
+    }
+
+    .feature-card p {
+        color: var(--text-color, #333);
+        margin-bottom: 20px;
+        line-height: 1.6;
+    }
+
+    .btn-primary {
+        display: inline-block;
+        padding: 10px 25px;
+        background-color: var(--primary-color, #0066cc);
+        color: white;
+        text-decoration: none;
+        border-radius: 5px;
+        transition: background-color 0.3s ease;
+        font-weight: 500;
+    }
+
+    .btn-primary:hover {
+        background-color: var(--primary-hover, #28a745);
+        color: white;
+    }
+
+    .info-section {
+        background: var(--surface-color, #f8f9fa);
+        padding: 40px;
+        border-radius: 10px;
+        border-left: 5px solid var(--primary-color, #0066cc);
+    }
+
+    .info-section h2 {
+        color: var(--primary-color, #0066cc);
+        margin-bottom: 20px;
+    }
+
+    .info-section p {
+        color: var(--text-color, #333);
+        line-height: 1.8;
+        margin-bottom: 20px;
+    }
+
+    .feature-list {
+        list-style: none;
+        padding: 0;
+    }
+
+    .feature-list li {
+        padding: 10px 0;
+        color: var(--text-color, #333);
+        font-size: 1.1rem;
+    }
+
+    .status-badge {
+        display: inline-block;
+        padding: 3px 8px;
+        border-radius: 4px;
+        font-size: 0.85rem;
+        font-weight: 600;
+        margin-left: 8px;
+    }
+
+    .status-active {
+        background-color: #28a745;
+        color: white;
+    }
+
+    .status-pending {
+        background-color: #ffc107;
+        color: #000;
+    }
+</style>

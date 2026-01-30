@@ -1,0 +1,191 @@
+@page "/selbstbewertung"
+@using BildungsBericht.Models
+@inherits SelbstbewertungBase
+
+<PageTitle>Selbstbewertung - Bildungsbericht</PageTitle>
+
+<div class="container mt-4">
+    <div class="page-header">
+        <h1>✍️ Selbstbewertung</h1>
+        <p class="lead">Reflektieren Sie Ihre Lernfortschritte</p>
+    </div>
+
+    @if (!string.IsNullOrEmpty(StatusMessage))
+    {
+        <div class="alert @(IsError ? "alert-danger" : "alert-success") alert-dismissible fade show" role="alert">
+            @StatusMessage
+            <button type="button" class="btn-close" @onclick="() => StatusMessage = null"></button>
+        </div>
+    }
+
+    <div class="card">
+        <div class="card-header bg-primary text-white">
+            <h3 class="mb-0">Meine Selbstbewertungen</h3>
+        </div>
+        <div class="card-body">
+            @if (Selbstbewertungen == null)
+            {
+                <div class="text-center p-5">
+                    <div class="spinner-border text-primary" role="status">
+                        <span class="visually-hidden">Lädt...</span>
+                    </div>
+                    <p class="mt-3">Selbstbewertungen werden geladen...</p>
+                </div>
+            }
+            else if (!Selbstbewertungen.Any())
+            {
+                <div class="alert alert-warning">
+                    <strong>Keine Selbstbewertungen gefunden.</strong> Es sind derzeit keine Selbstbewertungen im System vorhanden.
+                </div>
+            }
+            else
+            {
+                <div class="table-responsive">
+                    <table class="table table-hover table-striped">
+                        <thead class="table-primary">
+                            <tr>
+                                <th>ID</th>
+                                <th>Bericht ID</th>
+                                <th>Note</th>
+                                <th>Gelernt</th>
+                                <th>Aktionen</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @foreach (var selbstbewertung in Selbstbewertungen)
+                            {
+                                <tr>
+                                    <td>@selbstbewertung.Id</td>
+                                    <td>@selbstbewertung.TemplateBerichtId</td>
+                                    <td>@(selbstbewertung.SelbstNote?.ToString() ?? "N/A")</td>
+                                    <td>@(string.IsNullOrEmpty(selbstbewertung.Gelernt) ? "N/A" : (selbstbewertung.Gelernt.Length > 50 ? selbstbewertung.Gelernt.Substring(0, 50) + "..." : selbstbewertung.Gelernt))</td>
+                                    <td>
+                                        <button class="btn btn-sm btn-primary" disabled>Details</button>
+                                    </td>
+                                </tr>
+                            }
+                        </tbody>
+                    </table>
+                </div>
+
+                <div class="mt-3">
+                    <p class="text-muted">Anzahl Selbstbewertungen: @Selbstbewertungen.Count()</p>
+                </div>
+            }
+
+            <button class="btn btn-primary mt-3" @onclick="OpenCreateModal">
+                <i class="bi bi-plus-circle"></i> Neue Selbstbewertung
+            </button>
+        </div>
+    </div>
+</div>
+
+@* Modal for creating new self-assessment *@
+@if (ShowCreateModal)
+{
+    <div class="modal fade show d-block" tabindex="-1" style="background-color: rgba(0,0,0,0.5);">
+        <div class="modal-dialog modal-lg">
+            <div class="modal-content">
+                <div class="modal-header bg-primary text-white">
+                    <h5 class="modal-title">Neue Selbstbewertung erstellen</h5>
+                    <button type="button" class="btn-close btn-close-white" @onclick="CloseCreateModal" disabled="@IsCreating"></button>
+                </div>
+                <div class="modal-body">
+                    <EditForm Model="NewSelbstbewertung" OnValidSubmit="CreateSelbstbewertung">
+                        <DataAnnotationsValidator />
+                        <ValidationSummary class="text-danger" />
+
+                        <div class="mb-3">
+                            <label for="templateBerichtId" class="form-label">Bericht ID <span class="text-danger">*</span></label>
+                            <InputNumber id="templateBerichtId" class="form-control" @bind-Value="NewSelbstbewertung.TemplateBerichtId" disabled="@IsCreating" />
+                            <ValidationMessage For="@(() => NewSelbstbewertung.TemplateBerichtId)" />
+                        </div>
+
+                        <div class="mb-3">
+                            <label for="selbstNote" class="form-label">Selbsteinschätzung Note (1-6)</label>
+                            <InputNumber id="selbstNote" class="form-control" @bind-Value="NewSelbstbewertung.SelbstNote" min="1" max="6" disabled="@IsCreating" />
+                            <ValidationMessage For="@(() => NewSelbstbewertung.SelbstNote)" />
+                        </div>
+
+                        <div class="mb-3">
+                            <label for="gelernt" class="form-label">Was habe ich gelernt?</label>
+                            <InputTextArea id="gelernt" class="form-control" rows="3" @bind-Value="NewSelbstbewertung.Gelernt" disabled="@IsCreating" />
+                        </div>
+
+                        <div class="mb-3">
+                            <label for="reflexion" class="form-label">Reflexion</label>
+                            <InputTextArea id="reflexion" class="form-control" rows="3" @bind-Value="NewSelbstbewertung.Reflexion" disabled="@IsCreating" />
+                        </div>
+
+                        <div class="mb-3">
+                            <label for="herausforderungen" class="form-label">Herausforderungen und Schwierigkeiten</label>
+                            <InputTextArea id="herausforderungen" class="form-control" rows="3" @bind-Value="NewSelbstbewertung.Herausforderungen" disabled="@IsCreating" />
+                        </div>
+
+                        <div class="mb-3">
+                            <label for="naechsteZiele" class="form-label">Nächste Ziele</label>
+                            <InputTextArea id="naechsteZiele" class="form-control" rows="3" @bind-Value="NewSelbstbewertung.NaechsteZiele" disabled="@IsCreating" />
+                        </div>
+
+                        <div class="modal-footer">
+                            <button type="button" class="btn btn-secondary" @onclick="CloseCreateModal" disabled="@IsCreating">
+                                Abbrechen
+                            </button>
+                            <button type="submit" class="btn btn-primary" disabled="@IsCreating">
+                                @if (IsCreating)
+                                {
+                                    <span class="spinner-border spinner-border-sm me-2" role="status"></span>
+                                    <span>Erstellen...</span>
+                                }
+                                else
+                                {
+                                    <span>Erstellen</span>
+                                }
+                            </button>
+                        </div>
+                    </EditForm>
+                </div>
+            </div>
+        </div>
+    </div>
+}
+
+<style>
+    .page-header {
+        margin-bottom: 30px;
+        padding-bottom: 20px;
+        border-bottom: 3px solid #0066cc;
+    }
+
+    .card {
+        border: 2px solid #0066cc;
+        border-radius: 10px;
+        box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    }
+
+    .card-header.bg-primary {
+        background-color: #0066cc !important;
+        border-radius: 8px 8px 0 0;
+    }
+
+    .lead {
+        color: #666;
+    }
+
+    .table-primary {
+        background-color: #e6f2ff !important;
+    }
+
+    .table-hover tbody tr:hover {
+        background-color: #f0f8ff;
+    }
+
+    .btn-sm {
+        margin-right: 5px;
+    }
+
+    .modal.show {
+        display: block;
+    }
+</style>
+

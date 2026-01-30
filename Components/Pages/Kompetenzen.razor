@@ -1,0 +1,68 @@
+@page "/kompetenzen"
+
+<PageTitle>Kompetenzen - Bildungsbericht</PageTitle>
+
+<div class="container mt-4">
+    <div class="page-header">
+        <h1>📊 Kompetenzbewertung</h1>
+        <p class="lead">Verwalten und bewerten Sie Kompetenzen</p>
+    </div>
+
+    <div class="card">
+        <div class="card-header bg-primary text-white">
+            <h3 class="mb-0">Kompetenzverwaltung</h3>
+        </div>
+        <div class="card-body">
+            <div class="alert alert-success">
+                <strong>✓ System bereit!</strong> Die Basis-Infrastruktur für Benutzer, Berichte und Selbstbewertungen ist nun funktionsfähig!
+            </div>
+
+            <div class="alert alert-info">
+                <strong>In Entwicklung:</strong> Kompetenzbewertung wird in der nächsten Phase implementiert.
+            </div>
+            
+            <h4>Geplante Funktionen</h4>
+            <ul>
+                <li>Kompetenzbereiche anzeigen</li>
+                <li>Spezifische Kompetenzen bewerten</li>
+                <li>Bewertungen durch Berufsbildner</li>
+                <li>Bewertungen durch Lehrende</li>
+                <li>Fortschrittsübersicht</li>
+            </ul>
+
+            <h4 class="mt-4">Bereits verfügbare Funktionen</h4>
+            <ul class="text-success">
+                <li>✓ Benutzerverwaltung mit Create-Funktion</li>
+                <li>✓ Berichtserstellung und -verwaltung</li>
+                <li>✓ Selbstbewertungen erstellen und anzeigen</li>
+                <li>✓ Light/Dark Mode Toggle</li>
+            </ul>
+
+            <button class="btn btn-secondary mt-3" disabled>Kompetenz bewerten (In Entwicklung)</button>
+        </div>
+    </div>
+</div>
+
+<style>
+    .page-header {
+        margin-bottom: 30px;
+        padding-bottom: 20px;
+        border-bottom: 3px solid var(--primary-color, #0066cc);
+    }
+
+    .card {
+        border: 2px solid var(--primary-color, #0066cc);
+        border-radius: 10px;
+        box-shadow: 0 4px 6px var(--card-shadow, rgba(0, 0, 0, 0.1));
+    }
+
+    .card-header.bg-primary {
+        background-color: var(--primary-color, #0066cc) !important;
+        border-radius: 8px 8px 0 0;
+    }
+
+    .lead {
+        color: var(--text-muted, #666);
+    }
+</style>
+

@@ -1,0 +1,91 @@
+@using Microsoft.JSInterop
+@inject IJSRuntime JSRuntime
+
+<div class="theme-toggle">
+    <button class="btn btn-sm @ThemeButtonClass" @onclick="ToggleTheme" title="@ThemeTitle">
+        @if (IsDarkMode)
+        {
+            <span>🌙 Dark</span>
+        }
+        else
+        {
+            <span>☀️ Light</span>
+        }
+    </button>
+</div>
+
+@code {
+    private bool IsDarkMode { get; set; } = false;
+    private string ThemeButtonClass => IsDarkMode ? "btn-light" : "btn-dark";
+    private string ThemeTitle => IsDarkMode ? "Zu hellem Modus wechseln" : "Zu dunklem Modus wechseln";
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (firstRender)
+        {
+            // Load theme preference from localStorage
+            try
+            {
+                var theme = await JSRuntime.InvokeAsync<string>("localStorage.getItem", "theme");
+                IsDarkMode = theme == "dark";
+                await ApplyTheme();
+                StateHasChanged();
+            }
+            catch
+            {
+                // If localStorage is not available, use default light theme
+                IsDarkMode = false;
+            }
+        }
+    }
+
+    private async Task ToggleTheme()
+    {
+        IsDarkMode = !IsDarkMode;
+        await ApplyTheme();
+        await SaveThemePreference();
+    }
+
+    private async Task ApplyTheme()
+    {
+        try
+        {
+            var theme = IsDarkMode ? "dark" : "light";
+            await JSRuntime.InvokeVoidAsync("eval", $"document.documentElement.setAttribute('data-theme', '{theme}')");
+        }
+        catch
+        {
+            // Ignore JS interop errors
+        }
+    }
+
+    private async Task SaveThemePreference()
+    {
+        try
+        {
+            var theme = IsDarkMode ? "dark" : "light";
+            await JSRuntime.InvokeVoidAsync("localStorage.setItem", "theme", theme);
+        }
+        catch
+        {
+            // Ignore localStorage errors
+        }
+    }
+}
+
+<style>
+    .theme-toggle {
+        display: inline-block;
+    }
+
+    .theme-toggle .btn {
+        border-radius: 20px;
+        padding: 0.25rem 0.75rem;
+        font-size: 0.875rem;
+        transition: all 0.3s ease;
+    }
+
+    .theme-toggle .btn:hover {
+        transform: scale(1.05);
+    }
+</style>
