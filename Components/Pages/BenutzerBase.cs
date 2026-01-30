@@ -18,6 +18,16 @@ namespace BildungsBericht.Components.Pages
 
         public Models.Benutzer NewBenutzer { get; set; } = new Models.Benutzer();
 
+        // Edit-Funktionalität
+        public bool ShowEditModal { get; set; } = false;
+        public bool IsEditing { get; set; } = false;
+        public Models.Benutzer EditBenutzer { get; set; } = new Models.Benutzer();
+
+        // Delete-Funktionalität
+        public bool ShowDeleteModal { get; set; } = false;
+        public bool IsDeleting { get; set; } = false;
+        public CLBenutzer? DeleteBenutzer { get; set; } = null;
+
         protected override async Task OnInitializedAsync()
         {
             await LoadBenutzers();
@@ -93,6 +103,137 @@ namespace BildungsBericht.Components.Pages
         {
             ShowCreateModal = false;
             StateHasChanged();
+        }
+
+        // Edit-Modal öffnen
+        protected async Task OpenEditModal(CLBenutzer benutzer)
+        {
+            try
+            {
+                // Vollständige Benutzerdaten laden
+                var vollstaendigerBenutzer = await BenutzerService.GetBenutzerById(benutzer.BenutzerId);
+                
+                if (vollstaendigerBenutzer != null)
+                {
+                    EditBenutzer = vollstaendigerBenutzer;
+                    ShowEditModal = true;
+                    StatusMessage = null;
+                }
+                else
+                {
+                    StatusMessage = "Fehler: Benutzer konnte nicht geladen werden.";
+                    IsError = true;
+                }
+            }
+            catch (Exception ex)
+            {
+                StatusMessage = $"Fehler beim Laden des Benutzers: {ex.Message}";
+                IsError = true;
+            }
+            StateHasChanged();
+        }
+
+        // Edit-Modal schließen
+        protected void CloseEditModal()
+        {
+            ShowEditModal = false;
+            StateHasChanged();
+        }
+
+        // Benutzer aktualisieren
+        protected async Task UpdateBenutzer()
+        {
+            try
+            {
+                IsEditing = true;
+                StatusMessage = null;
+                StateHasChanged();
+
+                bool success = await BenutzerService.UpdateBenutzer(EditBenutzer);
+
+                if (success)
+                {
+                    StatusMessage = "Benutzer erfolgreich aktualisiert!";
+                    IsError = false;
+                    ShowEditModal = false;
+                    await LoadBenutzers();
+                }
+                else
+                {
+                    StatusMessage = "Fehler beim Aktualisieren des Benutzers.";
+                    IsError = true;
+                }
+            }
+            catch (Exception ex)
+            {
+                StatusMessage = $"Fehler: {ex.Message}";
+                IsError = true;
+            }
+            finally
+            {
+                IsEditing = false;
+                StateHasChanged();
+            }
+        }
+
+        // Delete-Modal öffnen
+        protected void OpenDeleteModal(CLBenutzer benutzer)
+        {
+            DeleteBenutzer = benutzer;
+            ShowDeleteModal = true;
+            StatusMessage = null;
+            StateHasChanged();
+        }
+
+        // Delete-Modal schließen
+        protected void CloseDeleteModal()
+        {
+            ShowDeleteModal = false;
+            StateHasChanged();
+        }
+
+        // Benutzer löschen
+        protected async Task ConfirmDeleteBenutzer()
+        {
+            try
+            {
+                // Null-Check für Sicherheit
+                if (DeleteBenutzer == null)
+                {
+                    StatusMessage = "Fehler: Kein Benutzer ausgewählt.";
+                    IsError = true;
+                    return;
+                }
+
+                IsDeleting = true;
+                StatusMessage = null;
+                StateHasChanged();
+
+                bool success = await BenutzerService.DeleteBenutzer(DeleteBenutzer.BenutzerId);
+
+                if (success)
+                {
+                    StatusMessage = "Benutzer erfolgreich gelöscht!";
+                    IsError = false;
+                    ShowDeleteModal = false;
+                    await LoadBenutzers();
+                }
+                else
+                {
+                    StatusMessage = "Fehler beim Löschen des Benutzers.";
+                    IsError = true;
+                }
+            }
+            catch (Exception ex)
+            {
+                StatusMessage = $"Fehler: {ex.Message}";
+                IsError = true;
+            }
+            finally
+            {
+                IsDeleting = false;
+                StateHasChanged();
+            }
         }
     }
 }

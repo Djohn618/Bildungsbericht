@@ -39,11 +39,39 @@ namespace BildungsBericht.Controllers
             }
         }
 
+        [HttpGet("{id}")]
+        public async Task<ActionResult> GetBenutzerById(int id)
+        {
+            try
+            {
+                Benutzer benutzer = await GetBenutzerByIdExt(id);
+                if (benutzer != null)
+                {
+                    return Ok(benutzer);
+                }
+                else
+                {
+                    return NotFound(new { message = "Benutzer nicht gefunden" });
+                }
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(StatusCodes.Status500InternalServerError,
+                    $"Fehler beim Abrufen des Benutzers: {ex.Message}");
+            }
+        }
+
         public async Task<IEnumerable<CLBenutzer>> GetBenutzersExt()
         {
             List<CLBenutzer> listB = DBBildungsbericht.GetAllBenutzers();
 
             return await Task.FromResult( listB );
+        }
+
+        public async Task<Benutzer> GetBenutzerByIdExt(int id)
+        {
+            Benutzer benutzer = DBBildungsbericht.GetBenutzerById(id);
+            return await Task.FromResult(benutzer);
         }
 
         [HttpPost]
