@@ -1,4 +1,4 @@
-/* _content/BildungsBericht/Components/Layout/MainLayout.razor.rz.scp.css */
+/* /Components/Layout/MainLayout.razor.rz.scp.css */
 .page[b-7tyrfirgv8] {
     position: relative;
     display: flex;
@@ -95,7 +95,7 @@ main[b-7tyrfirgv8] {
         right: 0.75rem;
         top: 0.5rem;
     }
-/* _content/BildungsBericht/Components/Layout/NavMenu.razor.rz.scp.css */
+/* /Components/Layout/NavMenu.razor.rz.scp.css */
 .navbar-toggler[b-pjzmuzrt9u] {
     appearance: none;
     cursor: pointer;

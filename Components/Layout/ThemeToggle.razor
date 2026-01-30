@@ -1,3 +1,4 @@
+@rendermode InteractiveServer
 @using Microsoft.JSInterop
 @inject IJSRuntime JSRuntime
 
@@ -23,7 +24,7 @@
     {
         if (firstRender)
         {
-            // Load theme preference from localStorage
+            // Lade das gespeicherte Theme aus dem LocalStorage
             try
             {
                 var theme = await JSRuntime.InvokeAsync<string>("localStorage.getItem", "theme");
@@ -33,7 +34,7 @@
             }
             catch
             {
-                // If localStorage is not available, use default light theme
+                // Falls LocalStorage nicht verfügbar ist, verwende helles Theme
                 IsDarkMode = false;
             }
         }
@@ -41,8 +42,11 @@
 
     private async Task ToggleTheme()
     {
+        // Theme umschalten
         IsDarkMode = !IsDarkMode;
+        // Theme anwenden
         await ApplyTheme();
+        // Im LocalStorage speichern
         await SaveThemePreference();
     }
 
@@ -50,12 +54,13 @@
     {
         try
         {
+            // Setze das data-theme Attribut auf dem html Element
             var theme = IsDarkMode ? "dark" : "light";
             await JSRuntime.InvokeVoidAsync("eval", $"document.documentElement.setAttribute('data-theme', '{theme}')");
         }
         catch
         {
-            // Ignore JS interop errors
+            // Fehler beim Anwenden des Themes ignorieren
         }
     }
 
@@ -63,12 +68,13 @@
     {
         try
         {
+            // Speichere die Auswahl im LocalStorage für spätere Besuche
             var theme = IsDarkMode ? "dark" : "light";
             await JSRuntime.InvokeVoidAsync("localStorage.setItem", "theme", theme);
         }
         catch
         {
-            // Ignore localStorage errors
+            // Fehler beim Speichern ignorieren
         }
     }
 }
