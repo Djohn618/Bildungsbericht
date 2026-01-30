@@ -58,5 +58,37 @@ namespace BildungsBericht.Services
                 return false;
             }
         }
+
+        // Benutzer aktualisieren (Update)
+        public async Task<bool> UpdateBenutzer(Benutzer benutzer)
+        {
+            try
+            {
+                string url = $"{baseUrl}/api/benutzers/{benutzer.Id}";
+                HttpResponseMessage response = await httpClient.PutAsJsonAsync(url, benutzer);
+                
+                return response.IsSuccessStatusCode;
+            }
+            catch (Exception)
+            {
+                return false;
+            }
+        }
+
+        // Benutzer löschen (Delete)
+        public async Task<bool> DeleteBenutzer(int benutzerId)
+        {
+            try
+            {
+                string url = $"{baseUrl}/api/benutzers/{benutzerId}";
+                HttpResponseMessage response = await httpClient.DeleteAsync(url);
+                
+                return response.IsSuccessStatusCode;
+            }
+            catch (Exception)
+            {
+                return false;
+            }
+        }
     }
 }

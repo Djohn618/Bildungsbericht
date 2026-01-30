@@ -77,5 +77,73 @@ namespace BildungsBericht.Controllers
             int newId = DBBildungsbericht.CreateBericht(bericht);
             return await Task.FromResult(newId);
         }
+
+        // Bericht aktualisieren (Update)
+        [HttpPut("{id}")]
+        public async Task<ActionResult> UpdateBericht(int id, [FromBody] TemplateBericht bericht)
+        {
+            try
+            {
+                if (!ModelState.IsValid)
+                {
+                    return BadRequest(ModelState);
+                }
+
+                // ID muss übereinstimmen
+                bericht.Id = id;
+
+                bool success = await UpdateBerichtExt(bericht);
+                
+                if (success)
+                {
+                    return Ok(new { message = "Bericht erfolgreich aktualisiert" });
+                }
+                else
+                {
+                    return NotFound(new { message = "Bericht nicht gefunden" });
+                }
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(StatusCodes.Status500InternalServerError,
+                    $"Fehler beim Aktualisieren des Berichts: {ex.Message}");
+            }
+        }
+
+        public async Task<bool> UpdateBerichtExt(TemplateBericht bericht)
+        {
+            bool success = DBBildungsbericht.UpdateBericht(bericht);
+            return await Task.FromResult(success);
+        }
+
+        // Bericht löschen (Delete)
+        [HttpDelete("{id}")]
+        public async Task<ActionResult> DeleteBericht(int id)
+        {
+            try
+            {
+                bool success = await DeleteBerichtExt(id);
+                
+                if (success)
+                {
+                    return Ok(new { message = "Bericht erfolgreich gelöscht" });
+                }
+                else
+                {
+                    return NotFound(new { message = "Bericht nicht gefunden" });
+                }
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(StatusCodes.Status500InternalServerError,
+                    $"Fehler beim Löschen des Berichts: {ex.Message}");
+            }
+        }
+
+        public async Task<bool> DeleteBerichtExt(int id)
+        {
+            bool success = DBBildungsbericht.DeleteBericht(id);
+            return await Task.FromResult(success);
+        }
     }
 }

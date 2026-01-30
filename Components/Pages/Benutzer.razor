@@ -75,13 +75,91 @@
             }
             
             <div class="mt-4">
-                <button class="btn btn-success" @onclick="CreateBenutzer">
-                    <i class="bi bi-plus-circle"></i> XNeuen Benutzer hinzufügen
+                <button class="btn btn-success" @onclick="OpenCreateModal">
+                    <i class="bi bi-plus-circle"></i> Neuen Benutzer hinzufügen
                 </button>
             </div>
         </div>
     </div>
 </div>
+
+@* Modal für neuen Benutzer *@
+@if (ShowCreateModal)
+{
+    <div class="modal fade show d-block" tabindex="-1" style="background-color: rgba(0,0,0,0.5);">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header bg-primary text-white">
+                    <h5 class="modal-title">Neuen Benutzer erstellen</h5>
+                    <button type="button" class="btn-close btn-close-white" @onclick="CloseCreateModal" disabled="@IsCreating"></button>
+                </div>
+                <div class="modal-body">
+                    <EditForm Model="NewBenutzer" OnValidSubmit="CreateBenutzer">
+                        <DataAnnotationsValidator />
+                        <ValidationSummary class="text-danger" />
+
+                        <div class="mb-3">
+                            <label for="vorname" class="form-label">Vorname <span class="text-danger">*</span></label>
+                            <InputText id="vorname" class="form-control" @bind-Value="NewBenutzer.Vorname" disabled="@IsCreating" placeholder="Max" />
+                            <ValidationMessage For="@(() => NewBenutzer.Vorname)" />
+                        </div>
+
+                        <div class="mb-3">
+                            <label for="nachname" class="form-label">Nachname <span class="text-danger">*</span></label>
+                            <InputText id="nachname" class="form-control" @bind-Value="NewBenutzer.Nachname" disabled="@IsCreating" placeholder="Mustermann" />
+                            <ValidationMessage For="@(() => NewBenutzer.Nachname)" />
+                        </div>
+
+                        <div class="mb-3">
+                            <label for="email" class="form-label">Email</label>
+                            <InputText id="email" class="form-control" @bind-Value="NewBenutzer.Email" disabled="@IsCreating" placeholder="max.mustermann@example.com" />
+                            <ValidationMessage For="@(() => NewBenutzer.Email)" />
+                        </div>
+
+                        <div class="mb-3">
+                            <label for="geburtsdatum" class="form-label">Geburtsdatum</label>
+                            <InputDate id="geburtsdatum" class="form-control" @bind-Value="NewBenutzer.Geburtsdatum" disabled="@IsCreating" />
+                            <ValidationMessage For="@(() => NewBenutzer.Geburtsdatum)" />
+                        </div>
+
+                        <div class="mb-3">
+                            <label for="passwort" class="form-label">Passwort <span class="text-danger">*</span></label>
+                            <InputText id="passwort" type="password" class="form-control" @bind-Value="NewBenutzer.Passwort" disabled="@IsCreating" placeholder="Passwort eingeben" />
+                            <ValidationMessage For="@(() => NewBenutzer.Passwort)" />
+                        </div>
+
+                        <div class="mb-3">
+                            <label for="rolleId" class="form-label">Rolle <span class="text-danger">*</span></label>
+                            <InputSelect id="rolleId" class="form-select" @bind-Value="NewBenutzer.RolleId" disabled="@IsCreating">
+                                <option value="1">Lernender</option>
+                                <option value="2">Berufsbildner</option>
+                                <option value="3">Lehrperson</option>
+                                <option value="4">Administrator</option>
+                            </InputSelect>
+                        </div>
+
+                        <div class="modal-footer">
+                            <button type="button" class="btn btn-secondary" @onclick="CloseCreateModal" disabled="@IsCreating">
+                                Abbrechen
+                            </button>
+                            <button type="submit" class="btn btn-primary" disabled="@IsCreating">
+                                @if (IsCreating)
+                                {
+                                    <span class="spinner-border spinner-border-sm me-2" role="status"></span>
+                                    <span>Erstellen...</span>
+                                }
+                                else
+                                {
+                                    <span>Erstellen</span>
+                                }
+                            </button>
+                        </div>
+                    </EditForm>
+                </div>
+            </div>
+        </div>
+    </div>
+}
 
 
 <style>

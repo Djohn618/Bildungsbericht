@@ -44,10 +44,7 @@ namespace BildungsBericht.Components.Pages
                 StatusMessage = null;
                 StateHasChanged();
 
-                NewBenutzer.Vorname = "Bibi";
-                NewBenutzer.Nachname = "Tata";
-                NewBenutzer.Passwort = "P";
-
+                // Benutzer erstellen mit den Formulardaten
                 bool success = await BenutzerService.CreateBenutzer( NewBenutzer );
 
                 if( success )
@@ -55,6 +52,8 @@ namespace BildungsBericht.Components.Pages
                     StatusMessage = "Benutzer erfolgreich erstellt!";
                     IsError = false;
                     ShowCreateModal = false;
+                    // Formular zurücksetzen
+                    NewBenutzer = new Models.Benutzer();
                     await LoadBenutzers();
                 }
                 else
@@ -73,6 +72,27 @@ namespace BildungsBericht.Components.Pages
                 IsCreating = false;
                 StateHasChanged();
             }
+        }
+
+        // Modal öffnen für neuen Benutzer
+        protected void OpenCreateModal()
+        {
+            // Neues Benutzer-Objekt mit Standardwerten
+            NewBenutzer = new Models.Benutzer
+            {
+                RolleId = 1, // Standard Rolle
+                Geburtsdatum = DateTime.Today.AddYears(-18) // Standard Geburtsdatum
+            };
+            ShowCreateModal = true;
+            StatusMessage = null;
+            StateHasChanged();
+        }
+
+        // Modal schließen
+        protected void CloseCreateModal()
+        {
+            ShowCreateModal = false;
+            StateHasChanged();
         }
     }
 }

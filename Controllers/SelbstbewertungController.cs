@@ -77,5 +77,73 @@ namespace BildungsBericht.Controllers
             int newId = DBBildungsbericht.CreateSelbstbewertung(selbstbewertung);
             return await Task.FromResult(newId);
         }
+
+        // Selbstbewertung aktualisieren (Update)
+        [HttpPut("{id}")]
+        public async Task<ActionResult> UpdateSelbstbewertung(int id, [FromBody] Selbstbewertung selbstbewertung)
+        {
+            try
+            {
+                if (!ModelState.IsValid)
+                {
+                    return BadRequest(ModelState);
+                }
+
+                // ID muss übereinstimmen
+                selbstbewertung.Id = id;
+
+                bool success = await UpdateSelbstbewertungExt(selbstbewertung);
+                
+                if (success)
+                {
+                    return Ok(new { message = "Selbstbewertung erfolgreich aktualisiert" });
+                }
+                else
+                {
+                    return NotFound(new { message = "Selbstbewertung nicht gefunden" });
+                }
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(StatusCodes.Status500InternalServerError,
+                    $"Fehler beim Aktualisieren der Selbstbewertung: {ex.Message}");
+            }
+        }
+
+        public async Task<bool> UpdateSelbstbewertungExt(Selbstbewertung selbstbewertung)
+        {
+            bool success = DBBildungsbericht.UpdateSelbstbewertung(selbstbewertung);
+            return await Task.FromResult(success);
+        }
+
+        // Selbstbewertung löschen (Delete)
+        [HttpDelete("{id}")]
+        public async Task<ActionResult> DeleteSelbstbewertung(int id)
+        {
+            try
+            {
+                bool success = await DeleteSelbstbewertungExt(id);
+                
+                if (success)
+                {
+                    return Ok(new { message = "Selbstbewertung erfolgreich gelöscht" });
+                }
+                else
+                {
+                    return NotFound(new { message = "Selbstbewertung nicht gefunden" });
+                }
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(StatusCodes.Status500InternalServerError,
+                    $"Fehler beim Löschen der Selbstbewertung: {ex.Message}");
+            }
+        }
+
+        public async Task<bool> DeleteSelbstbewertungExt(int id)
+        {
+            bool success = DBBildungsbericht.DeleteSelbstbewertung(id);
+            return await Task.FromResult(success);
+        }
     }
 }
