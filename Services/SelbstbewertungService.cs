@@ -45,5 +45,37 @@ namespace BildungsBericht.Services
                 return false;
             }
         }
+
+        // Selbstbewertung aktualisieren (Update)
+        public async Task<bool> UpdateSelbstbewertung(Selbstbewertung selbstbewertung)
+        {
+            try
+            {
+                string url = $"{baseUrl}/api/selbstbewertung/{selbstbewertung.Id}";
+                HttpResponseMessage response = await httpClient.PutAsJsonAsync(url, selbstbewertung);
+
+                return response.IsSuccessStatusCode;
+            }
+            catch (Exception)
+            {
+                return false;
+            }
+        }
+
+        // Selbstbewertung löschen (Delete)
+        public async Task<bool> DeleteSelbstbewertung(int selbstbewertungId)
+        {
+            try
+            {
+                string url = $"{baseUrl}/api/selbstbewertung/{selbstbewertungId}";
+                HttpResponseMessage response = await httpClient.DeleteAsync(url);
+
+                return response.IsSuccessStatusCode;
+            }
+            catch (Exception)
+            {
+                return false;
+            }
+        }
     }
 }

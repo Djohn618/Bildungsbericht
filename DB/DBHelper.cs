@@ -37,42 +37,110 @@ namespace BildungsBericht.DB
             }
         }
 
+        // Neuen Benutzer erstellen (Create)
         public int CreateBenutzer(Benutzer benutzer)
         {
             try
             {
-                String query = "INSERT INTO tbl_benutzer (vorname, nachname, passwort) VALUES ('A', 'B', 'C' )";
+                // SQL Query mit Parametern für sichere Dateneingabe
+                String query = @"INSERT INTO tbl_benutzer (vorname, nachname, geburtsdatum, email, passwort, rolle_id, lehrberuf_id) 
+                                VALUES (@vorname, @nachname, @geburtsdatum, @email, @passwort, @rolle_id, @lehrberuf_id);
+                                SELECT CAST(SCOPE_IDENTITY() AS INT);";
 
+                // Parameter vorbereiten - verhindert SQL Injection
+                var parameters = new System.Data.SqlClient.SqlParameter[]
+                {
+                    new System.Data.SqlClient.SqlParameter("@vorname", benutzer.Vorname),
+                    new System.Data.SqlClient.SqlParameter("@nachname", benutzer.Nachname),
+                    new System.Data.SqlClient.SqlParameter("@geburtsdatum", (object)benutzer.Geburtsdatum ?? DBNull.Value),
+                    new System.Data.SqlClient.SqlParameter("@email", (object)benutzer.Email ?? DBNull.Value),
+                    new System.Data.SqlClient.SqlParameter("@passwort", benutzer.Passwort),
+                    new System.Data.SqlClient.SqlParameter("@rolle_id", benutzer.RolleId),
+                    new System.Data.SqlClient.SqlParameter("@lehrberuf_id", (object)benutzer.LehrberufId ?? DBNull.Value)
+                };
 
-                //String query = @"INSERT INTO tbl_benutzer (vorname, nachname, geburtsdatum, email, passwort, rolle_id, lehrberuf_id) 
-                                //VALUES (@vorname, @nachname, @geburtsdatum, @email, @passwort, @rolle_id, @lehrberuf_id);
-                                //SELECT CAST(SCOPE_IDENTITY() AS INT);";
-
-                //var parameters = new System.Data.SqlClient.SqlParameter[]
-                //{
-                //    new System.Data.SqlClient.SqlParameter("@vorname", benutzer.Vorname),
-                //    new System.Data.SqlClient.SqlParameter("@nachname", benutzer.Nachname),
-                //    new System.Data.SqlClient.SqlParameter("@geburtsdatum", (object)benutzer.Geburtsdatum ?? DBNull.Value),
-                //    new System.Data.SqlClient.SqlParameter("@email", (object)benutzer.Email ?? DBNull.Value),
-                //    new System.Data.SqlClient.SqlParameter("@passwort", benutzer.Passwort),
-                //    new System.Data.SqlClient.SqlParameter("@rolle_id", benutzer.RolleId),
-                //    new System.Data.SqlClient.SqlParameter("@lehrberuf_id", (object)benutzer.LehrberufId ?? DBNull.Value)
-                //};
-
-                // Execute both INSERT and SELECT SCOPE_IDENTITY() in a single transaction
+                // Transaktion starten
                 base.BeginTransaction();
-                object result = base.ExecuteSql(query, false);
+                // ExecuteScalarWithParameters verwenden, um die neue ID zu bekommen
+                object result = base.ExecuteScalarWithParameters(query, parameters);
+                // Transaktion abschließen
                 base.Commit();
 
-                return 10;
-
-                //return result != null ? Convert.ToInt32(result) : 0
-                ;
+                // Neue ID zurückgeben oder 0 wenn fehlgeschlagen
+                return result != null ? Convert.ToInt32(result) : 0;
             }
             catch (Exception ex)
             {
+                // Bei Fehler: Transaktion rückgängig machen
                 try { base.Rollback(); } catch { }
                 throw new Exception($"Fehler beim Erstellen des Benutzers: {ex.Message}", ex);
+            }
+        }
+
+        // Benutzer aktualisieren (Update)
+        public bool UpdateBenutzer(Benutzer benutzer)
+        {
+            try
+            {
+                // SQL Query um Benutzer zu aktualisieren
+                String query = @"UPDATE tbl_benutzer 
+                                SET vorname = @vorname, 
+                                    nachname = @nachname, 
+                                    geburtsdatum = @geburtsdatum, 
+                                    email = @email, 
+                                    passwort = @passwort, 
+                                    rolle_id = @rolle_id, 
+                                    lehrberuf_id = @lehrberuf_id 
+                                WHERE id = @id";
+
+                // Parameter vorbereiten
+                var parameters = new System.Data.SqlClient.SqlParameter[]
+                {
+                    new System.Data.SqlClient.SqlParameter("@id", benutzer.Id),
+                    new System.Data.SqlClient.SqlParameter("@vorname", benutzer.Vorname),
+                    new System.Data.SqlClient.SqlParameter("@nachname", benutzer.Nachname),
+                    new System.Data.SqlClient.SqlParameter("@geburtsdatum", (object)benutzer.Geburtsdatum ?? DBNull.Value),
+                    new System.Data.SqlClient.SqlParameter("@email", (object)benutzer.Email ?? DBNull.Value),
+                    new System.Data.SqlClient.SqlParameter("@passwort", benutzer.Passwort),
+                    new System.Data.SqlClient.SqlParameter("@rolle_id", benutzer.RolleId),
+                    new System.Data.SqlClient.SqlParameter("@lehrberuf_id", (object)benutzer.LehrberufId ?? DBNull.Value)
+                };
+
+                // Query ausführen
+                int rowsAffected = base.ExecuteSql(query, parameters);
+                
+                // Erfolgreich wenn mindestens eine Zeile geändert wurde
+                return rowsAffected > 0;
+            }
+            catch (Exception ex)
+            {
+                throw new Exception($"Fehler beim Aktualisieren des Benutzers: {ex.Message}", ex);
+            }
+        }
+
+        // Benutzer löschen (Delete)
+        public bool DeleteBenutzer(int benutzerId)
+        {
+            try
+            {
+                // SQL Query um Benutzer zu löschen
+                String query = "DELETE FROM tbl_benutzer WHERE id = @id";
+
+                // Parameter vorbereiten
+                var parameters = new System.Data.SqlClient.SqlParameter[]
+                {
+                    new System.Data.SqlClient.SqlParameter("@id", benutzerId)
+                };
+
+                // Query ausführen
+                int rowsAffected = base.ExecuteSql(query, parameters);
+                
+                // Erfolgreich wenn mindestens eine Zeile gelöscht wurde
+                return rowsAffected > 0;
+            }
+            catch (Exception ex)
+            {
+                throw new Exception($"Fehler beim Löschen des Benutzers: {ex.Message}", ex);
             }
         }
 
@@ -130,7 +198,7 @@ namespace BildungsBericht.DB
                 };
 
                 base.BeginTransaction();
-                object result = base.ExecuteScalar(query);
+                object result = base.ExecuteScalarWithParameters(query, parameters);
                 base.Commit();
                 
                 return result != null ? Convert.ToInt32(result) : 0;
@@ -139,6 +207,71 @@ namespace BildungsBericht.DB
             {
                 try { base.Rollback(); } catch { }
                 throw new Exception($"Fehler beim Erstellen des Berichts: {ex.Message}", ex);
+            }
+        }
+
+        // Bericht aktualisieren (Update)
+        public bool UpdateBericht(TemplateBericht bericht)
+        {
+            try
+            {
+                // SQL Query um Bericht zu aktualisieren
+                String query = @"UPDATE tbl_template_bericht 
+                                SET lernender_id = @lernender_id, 
+                                    berufsbildner_id = @berufsbildner_id, 
+                                    semester = @semester, 
+                                    berichtdatum = @berichtdatum, 
+                                    erstellt_durch_benutzer_id = @erstellt_durch_benutzer_id, 
+                                    tbl_lehrBeruf_id = @tbl_lehrBeruf_id 
+                                WHERE id = @id";
+
+                // Parameter vorbereiten
+                var parameters = new System.Data.SqlClient.SqlParameter[]
+                {
+                    new System.Data.SqlClient.SqlParameter("@id", bericht.Id),
+                    new System.Data.SqlClient.SqlParameter("@lernender_id", bericht.LernenderId),
+                    new System.Data.SqlClient.SqlParameter("@berufsbildner_id", (object)bericht.BerufsbildnerId ?? DBNull.Value),
+                    new System.Data.SqlClient.SqlParameter("@semester", bericht.Semester),
+                    new System.Data.SqlClient.SqlParameter("@berichtdatum", bericht.Berichtdatum),
+                    new System.Data.SqlClient.SqlParameter("@erstellt_durch_benutzer_id", bericht.ErstelltDurchBenutzerId),
+                    new System.Data.SqlClient.SqlParameter("@tbl_lehrBeruf_id", bericht.LehrberufId)
+                };
+
+                // Query ausführen
+                int rowsAffected = base.ExecuteSql(query, parameters);
+                
+                // Erfolgreich wenn mindestens eine Zeile geändert wurde
+                return rowsAffected > 0;
+            }
+            catch (Exception ex)
+            {
+                throw new Exception($"Fehler beim Aktualisieren des Berichts: {ex.Message}", ex);
+            }
+        }
+
+        // Bericht löschen (Delete)
+        public bool DeleteBericht(int berichtId)
+        {
+            try
+            {
+                // SQL Query um Bericht zu löschen
+                String query = "DELETE FROM tbl_template_bericht WHERE id = @id";
+
+                // Parameter vorbereiten
+                var parameters = new System.Data.SqlClient.SqlParameter[]
+                {
+                    new System.Data.SqlClient.SqlParameter("@id", berichtId)
+                };
+
+                // Query ausführen
+                int rowsAffected = base.ExecuteSql(query, parameters);
+                
+                // Erfolgreich wenn mindestens eine Zeile gelöscht wurde
+                return rowsAffected > 0;
+            }
+            catch (Exception ex)
+            {
+                throw new Exception($"Fehler beim Löschen des Berichts: {ex.Message}", ex);
             }
         }
 
@@ -196,7 +329,7 @@ namespace BildungsBericht.DB
                 };
 
                 base.BeginTransaction();
-                object result = base.ExecuteScalar(query);
+                object result = base.ExecuteScalarWithParameters(query, parameters);
                 base.Commit();
                 
                 return result != null ? Convert.ToInt32(result) : 0;
@@ -205,6 +338,71 @@ namespace BildungsBericht.DB
             {
                 try { base.Rollback(); } catch { }
                 throw new Exception($"Fehler beim Erstellen der Selbstbewertung: {ex.Message}", ex);
+            }
+        }
+
+        // Selbstbewertung aktualisieren (Update)
+        public bool UpdateSelbstbewertung(Selbstbewertung selbstbewertung)
+        {
+            try
+            {
+                // SQL Query um Selbstbewertung zu aktualisieren
+                String query = @"UPDATE tbl_selbstbewertung_lernende 
+                                SET selbst_note = @selbst_note, 
+                                    reflexion = @reflexion, 
+                                    gelernt = @gelernt, 
+                                    herausforderungen = @herausforderungen, 
+                                    naechste_ziele = @naechste_ziele, 
+                                    template_bericht_id = @template_bericht_id 
+                                WHERE id = @id";
+
+                // Parameter vorbereiten
+                var parameters = new System.Data.SqlClient.SqlParameter[]
+                {
+                    new System.Data.SqlClient.SqlParameter("@id", selbstbewertung.Id),
+                    new System.Data.SqlClient.SqlParameter("@selbst_note", (object)selbstbewertung.SelbstNote ?? DBNull.Value),
+                    new System.Data.SqlClient.SqlParameter("@reflexion", (object)selbstbewertung.Reflexion ?? DBNull.Value),
+                    new System.Data.SqlClient.SqlParameter("@gelernt", (object)selbstbewertung.Gelernt ?? DBNull.Value),
+                    new System.Data.SqlClient.SqlParameter("@herausforderungen", (object)selbstbewertung.Herausforderungen ?? DBNull.Value),
+                    new System.Data.SqlClient.SqlParameter("@naechste_ziele", (object)selbstbewertung.NaechsteZiele ?? DBNull.Value),
+                    new System.Data.SqlClient.SqlParameter("@template_bericht_id", selbstbewertung.TemplateBerichtId)
+                };
+
+                // Query ausführen
+                int rowsAffected = base.ExecuteSql(query, parameters);
+                
+                // Erfolgreich wenn mindestens eine Zeile geändert wurde
+                return rowsAffected > 0;
+            }
+            catch (Exception ex)
+            {
+                throw new Exception($"Fehler beim Aktualisieren der Selbstbewertung: {ex.Message}", ex);
+            }
+        }
+
+        // Selbstbewertung löschen (Delete)
+        public bool DeleteSelbstbewertung(int selbstbewertungId)
+        {
+            try
+            {
+                // SQL Query um Selbstbewertung zu löschen
+                String query = "DELETE FROM tbl_selbstbewertung_lernende WHERE id = @id";
+
+                // Parameter vorbereiten
+                var parameters = new System.Data.SqlClient.SqlParameter[]
+                {
+                    new System.Data.SqlClient.SqlParameter("@id", selbstbewertungId)
+                };
+
+                // Query ausführen
+                int rowsAffected = base.ExecuteSql(query, parameters);
+                
+                // Erfolgreich wenn mindestens eine Zeile gelöscht wurde
+                return rowsAffected > 0;
+            }
+            catch (Exception ex)
+            {
+                throw new Exception($"Fehler beim Löschen der Selbstbewertung: {ex.Message}", ex);
             }
         }
     }

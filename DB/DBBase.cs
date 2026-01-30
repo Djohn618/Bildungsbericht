@@ -424,5 +424,45 @@ namespace BildungsBericht.DB
             }
             return value;
         }
+
+        /// <summary>
+        /// Execute a scalar operation with parameters
+        /// </summary>
+        /// <param name="sqlCmd">SQL command to execute</param>
+        /// <param name="paramArray">Array of SQL parameters</param>
+        /// <returns>The first column of the first row in the result set</returns>
+        public object ExecuteScalarWithParameters( string sqlCmd, SqlParameter[] paramArray )
+        {
+            object value = null;
+            try
+            {
+                // Create SQL command
+                SqlCommand cmd = new SqlCommand( sqlCmd, Connection );
+
+                // Add transaction if available
+                if( trans != null )
+                    cmd.Transaction = trans;
+
+                // Add parameters to command
+                if( paramArray != null )
+                {
+                    if( paramArray.Length > 0 )
+                    {
+                        for( int i = 0; i <= paramArray.Length - 1; i++ )
+                            cmd.Parameters.Add( paramArray[i] );
+                    }
+                }
+
+                // Execute and get result
+                value = cmd.ExecuteScalar();
+            }
+            catch( Exception ex )
+            {
+                //Trace.HMI.Log( TL.L0, TT.E, TS.S, "ERROR {0} on query {1}", ex.Message, sqlCmd );
+                throw ex;
+            }
+
+            return value;
+        }
     }
 }

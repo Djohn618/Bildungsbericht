@@ -80,5 +80,73 @@ namespace BildungsBericht.Controllers
             int newId = DBBildungsbericht.CreateBenutzer(benutzer);
             return await Task.FromResult(newId);
         }
+
+        // Benutzer aktualisieren (Update)
+        [HttpPut("{id}")]
+        public async Task<ActionResult> UpdateBenutzer(int id, [FromBody] Benutzer benutzer)
+        {
+            try
+            {
+                if (!ModelState.IsValid)
+                {
+                    return BadRequest(ModelState);
+                }
+
+                // ID muss übereinstimmen
+                benutzer.Id = id;
+
+                bool success = await UpdateBenutzerExt(benutzer);
+                
+                if (success)
+                {
+                    return Ok(new { message = "Benutzer erfolgreich aktualisiert" });
+                }
+                else
+                {
+                    return NotFound(new { message = "Benutzer nicht gefunden" });
+                }
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(StatusCodes.Status500InternalServerError,
+                    $"Fehler beim Aktualisieren des Benutzers: {ex.Message}");
+            }
+        }
+
+        public async Task<bool> UpdateBenutzerExt(Benutzer benutzer)
+        {
+            bool success = DBBildungsbericht.UpdateBenutzer(benutzer);
+            return await Task.FromResult(success);
+        }
+
+        // Benutzer löschen (Delete)
+        [HttpDelete("{id}")]
+        public async Task<ActionResult> DeleteBenutzer(int id)
+        {
+            try
+            {
+                bool success = await DeleteBenutzerExt(id);
+                
+                if (success)
+                {
+                    return Ok(new { message = "Benutzer erfolgreich gelöscht" });
+                }
+                else
+                {
+                    return NotFound(new { message = "Benutzer nicht gefunden" });
+                }
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(StatusCodes.Status500InternalServerError,
+                    $"Fehler beim Löschen des Benutzers: {ex.Message}");
+            }
+        }
+
+        public async Task<bool> DeleteBenutzerExt(int id)
+        {
+            bool success = DBBildungsbericht.DeleteBenutzer(id);
+            return await Task.FromResult(success);
+        }
     }
 }

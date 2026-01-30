@@ -45,5 +45,37 @@ namespace BildungsBericht.Services
                 return false;
             }
         }
+
+        // Bericht aktualisieren (Update)
+        public async Task<bool> UpdateBericht(TemplateBericht bericht)
+        {
+            try
+            {
+                string url = $"{baseUrl}/api/berichte/{bericht.Id}";
+                HttpResponseMessage response = await httpClient.PutAsJsonAsync(url, bericht);
+
+                return response.IsSuccessStatusCode;
+            }
+            catch (Exception)
+            {
+                return false;
+            }
+        }
+
+        // Bericht löschen (Delete)
+        public async Task<bool> DeleteBericht(int berichtId)
+        {
+            try
+            {
+                string url = $"{baseUrl}/api/berichte/{berichtId}";
+                HttpResponseMessage response = await httpClient.DeleteAsync(url);
+
+                return response.IsSuccessStatusCode;
+            }
+            catch (Exception)
+            {
+                return false;
+            }
+        }
     }
 }
