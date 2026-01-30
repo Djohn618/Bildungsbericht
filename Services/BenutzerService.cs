@@ -44,6 +44,27 @@ namespace BildungsBericht.Services
             return benutzers;
         }
 
+        public async Task<Benutzer> GetBenutzerById(int id)
+        {
+            try
+            {
+                string url = $"{baseUrl}/api/benutzers/{id}";
+                HttpResponseMessage response = await httpClient.GetAsync(url);
+                
+                if (response.IsSuccessStatusCode)
+                {
+                    Benutzer benutzer = await response.Content.ReadFromJsonAsync<Benutzer>();
+                    return benutzer;
+                }
+                
+                return null;
+            }
+            catch (Exception)
+            {
+                return null;
+            }
+        }
+
         public async Task<bool> CreateBenutzer( Benutzer benutzer )
         {
             try

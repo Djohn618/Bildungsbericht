@@ -22,11 +22,12 @@ namespace BildungsBericht.Components.Pages
         public bool ShowEditModal { get; set; } = false;
         public bool IsEditing { get; set; } = false;
         public Models.Benutzer EditBenutzer { get; set; } = new Models.Benutzer();
+        private string? OriginalPassword { get; set; } // Speichert das Original-Passwort
 
         // Delete-Funktionalität
         public bool ShowDeleteModal { get; set; } = false;
         public bool IsDeleting { get; set; } = false;
-        public CLBenutzer DeleteBenutzer { get; set; }
+        public CLBenutzer? DeleteBenutzer { get; set; } = null;
 
         protected override async Task OnInitializedAsync()
         {
@@ -106,19 +107,31 @@ namespace BildungsBericht.Components.Pages
         }
 
         // Edit-Modal öffnen
-        protected void OpenEditModal(CLBenutzer benutzer)
+        protected async Task OpenEditModal(CLBenutzer benutzer)
         {
-            EditBenutzer = new Models.Benutzer
+            try
             {
-                Id = benutzer.BenutzerId,
-                Vorname = benutzer.FirstName,
-                Nachname = benutzer.LastName,
-                RolleId = 1, // Standard Rolle
-                Geburtsdatum = DateTime.Today.AddYears(-18),
-                Passwort = "******" // Platzhalter für Passwort
-            };
-            ShowEditModal = true;
-            StatusMessage = null;
+                // Vollständige Benutzerdaten laden
+                var vollstaendigerBenutzer = await BenutzerService.GetBenutzerById(benutzer.BenutzerId);
+                
+                if (vollstaendigerBenutzer != null)
+                {
+                    EditBenutzer = vollstaendigerBenutzer;
+                    OriginalPassword = vollstaendigerBenutzer.Passwort; // Original-Passwort speichern
+                    ShowEditModal = true;
+                    StatusMessage = null;
+                }
+                else
+                {
+                    StatusMessage = "Fehler: Benutzer konnte nicht geladen werden.";
+                    IsError = true;
+                }
+            }
+            catch (Exception ex)
+            {
+                StatusMessage = $"Fehler beim Laden des Benutzers: {ex.Message}";
+                IsError = true;
+            }
             StateHasChanged();
         }
 

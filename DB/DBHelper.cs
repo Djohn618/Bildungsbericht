@@ -37,6 +37,39 @@ namespace BildungsBericht.DB
             }
         }
 
+        // Einzelnen Benutzer nach ID abrufen
+        public Benutzer GetBenutzerById(int id)
+        {
+            try
+            {
+                String query = String.Format("SELECT Id, Vorname, Nachname, Geburtsdatum, Email, Passwort, Rolle_Id, Lehrberuf_Id FROM tbl_benutzer WHERE Id = {0}", id);
+
+                DataTable dt = base.GetDataTable(query);
+
+                if (dt.Rows.Count > 0)
+                {
+                    DataRow row = dt.Rows[0];
+                    return new Benutzer
+                    {
+                        Id = Convert.ToInt32(row["Id"]),
+                        Vorname = row["Vorname"].ToString(),
+                        Nachname = row["Nachname"].ToString(),
+                        Geburtsdatum = row["Geburtsdatum"] != DBNull.Value ? Convert.ToDateTime(row["Geburtsdatum"]) : null,
+                        Email = row["Email"] != DBNull.Value ? row["Email"].ToString() : null,
+                        Passwort = row["Passwort"].ToString(),
+                        RolleId = Convert.ToInt32(row["Rolle_Id"]),
+                        LehrberufId = row["Lehrberuf_Id"] != DBNull.Value ? (int?)Convert.ToInt32(row["Lehrberuf_Id"]) : null
+                    };
+                }
+
+                return null;
+            }
+            catch (Exception ex)
+            {
+                throw new Exception($"Fehler beim Abrufen des Benutzers: {ex.Message}", ex);
+            }
+        }
+
         // Neuen Benutzer erstellen (Create)
         public int CreateBenutzer(Benutzer benutzer)
         {
